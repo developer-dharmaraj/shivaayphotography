@@ -1,0 +1,7 @@
+{
+  "name": "ShivaayPhotography",
+  "description": "A premium, SEO-optimized photography portfolio with GSAP animations, masonry layouts, and an elegant luxury aesthetic.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
