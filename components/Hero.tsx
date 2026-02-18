@@ -65,7 +65,7 @@ const Hero: React.FC = () => {
           loop
           playsInline
           className="w-full h-full object-cover grayscale-[0.2] brightness-110">
-          <source src="/videos/hero1.mp4" type="video/mp4" />
+          <source src="https://res.cloudinary.com/dppcmxdhi/video/upload/v1771392399/WhatsApp_Video_2026-02-16_at_13.06.54_nnybeo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
