@@ -8,6 +8,68 @@ const Reels: React.FC = () => {
   const [reels, setReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Hide browser UI on mobile for fullscreen experience
+  useEffect(() => {
+    // Set viewport meta tag for fullscreen
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    }
+
+    // Add meta tags for mobile fullscreen
+    const addMetaTag = (name: string, content: string) => {
+      let meta = document.querySelector(`meta[name="${name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+
+    addMetaTag('apple-mobile-web-app-capable', 'yes');
+    addMetaTag('apple-mobile-web-app-status-bar-style', 'black-translucent');
+    addMetaTag('mobile-web-app-capable', 'yes');
+
+    // Try to enter fullscreen on mobile
+    const enterFullscreen = () => {
+      if (window.innerHeight < window.outerHeight) {
+        // Mobile device detected
+        const doc = document.documentElement as any;
+        if (doc.requestFullscreen) {
+          doc.requestFullscreen().catch(() => {});
+        } else if (doc.webkitRequestFullscreen) {
+          doc.webkitRequestFullscreen();
+        } else if (doc.mozRequestFullScreen) {
+          doc.mozRequestFullScreen();
+        } else if (doc.msRequestFullscreen) {
+          doc.msRequestFullscreen();
+        }
+      }
+    };
+
+    // Hide address bar by scrolling
+    const hideAddressBar = () => {
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 0);
+    };
+
+    // Execute on load
+    setTimeout(() => {
+      hideAddressBar();
+      enterFullscreen();
+    }, 100);
+
+    // Cleanup
+    return () => {
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+      }
+    };
+  }, []);
+
 const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -135,7 +197,7 @@ const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive 
   }
 
   return (
-    <div className="h-screen w-full bg-[#050505] overflow-hidden md:pl-24">
+    <div className="fixed inset-0 w-full bg-[#050505] overflow-hidden md:pl-24" style={{ height: '100vh', height: '100dvh' }}>
       <div 
         ref={containerRef}
         className="h-full w-full overflow-y-scroll snap-y snap-mandatory hide-scrollbar"
@@ -167,6 +229,20 @@ const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive 
         .hide-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        /* Fullscreen mobile styles */
+        @media (max-width: 768px) {
+          html, body {
+            height: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+          }
+          #root {
+            height: 100%;
+            height: 100dvh;
+          }
         }
       `}</style>
     </div>
