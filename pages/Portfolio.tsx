@@ -31,7 +31,7 @@ const Portfolio: React.FC = () => {
             if (!imageUrl.startsWith('/')) {
               imageUrl = '/' + imageUrl;
             }
-            imageUrl = `http://localhost:5000${imageUrl}`;
+            imageUrl = `https://shivaay-backend.onrender.com${imageUrl}`;
           }
           
           // Debug logging

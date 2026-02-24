@@ -91,8 +91,8 @@ const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive 
           id: video._id || video.id,
           title: video.title,
           category: video.category,
-          videoUrl: video.videoUrl?.startsWith('http') ? video.videoUrl : `http://localhost:5000${video.videoUrl}`,
-          thumbnailUrl: video.thumbnailUrl?.startsWith('http') ? video.thumbnailUrl : `http://localhost:5000${video.thumbnailUrl}`,
+          videoUrl: video.videoUrl?.startsWith('http') ? video.videoUrl : `https://shivaay-backend.onrender.com${video.videoUrl}`,
+          thumbnailUrl: video.thumbnailUrl?.startsWith('http') ? video.thumbnailUrl : `https://shivaay-backend.onrender.com${video.thumbnailUrl}`,
           location: video.location || 'Location'
         }));
         console.log('📹 [REELS] Transformed reels:', transformed.length, transformed);

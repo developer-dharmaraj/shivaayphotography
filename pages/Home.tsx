@@ -28,7 +28,7 @@ const Home: React.FC = () => {
           setFeaturedStories(items.slice(0, 2).map((item: any) => ({
             title: item.title,
             location: item.location || 'Location',
-            img: item.imageUrl?.startsWith('http') ? item.imageUrl : `http://localhost:5000${item.imageUrl}`,
+            img: item.imageUrl?.startsWith('http') ? item.imageUrl : `https://shivaay-backend.onrender.com${item.imageUrl}`,
             tag: item.category
           })));
         }
@@ -43,7 +43,7 @@ const Home: React.FC = () => {
         const data = await teamAPI.getAll();
         const normalizedData = data.map((item: any) => ({
           ...item,
-          image: item.image?.startsWith('http') ? item.image : item.image ? `http://localhost:5000${item.image}` : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop'
+          image: item.image?.startsWith('http') ? item.image : item.image ? `https://shivaay-backend.onrender.com${item.image}` : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop'
         }));
         setTeams(normalizedData);
       } catch (error) {
@@ -57,7 +57,7 @@ const Home: React.FC = () => {
         const data = await pricingAPI.getAll();
         const normalizedData = data.map((item: any) => ({
           ...item,
-          image: item.image?.startsWith('http') ? item.image : item.image ? `http://localhost:5000${item.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
+          image: item.image?.startsWith('http') ? item.image : item.image ? `https://shivaay-backend.onrender.com${item.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
         }));
         setPricing(normalizedData);
       } catch (error) {

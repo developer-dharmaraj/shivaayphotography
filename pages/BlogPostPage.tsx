@@ -16,7 +16,7 @@ const BlogPostPage: React.FC = () => {
         const data = await blogAPI.getBySlug(slug);
         setBlog({
           ...data,
-          featuredImage: data.featuredImage?.startsWith('http') ? data.featuredImage : `http://localhost:5000${data.featuredImage}`
+          featuredImage: data.featuredImage?.startsWith('http') ? data.featuredImage : `https://shivaay-backend.onrender.com${data.featuredImage}`
         });
       } catch (error) {
         console.error('Error fetching blog:', error);

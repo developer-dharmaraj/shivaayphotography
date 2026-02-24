@@ -17,8 +17,8 @@ const Hero: React.FC = () => {
           const activeBanner = banners[0];
           setBanner({
             ...activeBanner,
-            imageUrl: activeBanner.imageUrl?.startsWith('http') ? activeBanner.imageUrl : `http://localhost:5000${activeBanner.imageUrl}`,
-            videoUrl: activeBanner.videoUrl?.startsWith('http') ? activeBanner.videoUrl : activeBanner.videoUrl ? `http://localhost:5000${activeBanner.videoUrl}` : null
+            imageUrl: activeBanner.imageUrl?.startsWith('http') ? activeBanner.imageUrl : `https://shivaay-backend.onrender.com${activeBanner.imageUrl}`,
+            videoUrl: activeBanner.videoUrl?.startsWith('http') ? activeBanner.videoUrl : activeBanner.videoUrl ? `https://shivaay-backend.onrender.com${activeBanner.videoUrl}` : null
           });
         }
       } catch (error) {

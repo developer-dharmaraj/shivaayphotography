@@ -18,7 +18,7 @@ const Blog: React.FC = () => {
           slug: post.slug,
           excerpt: post.excerpt,
           content: post.content,
-          featuredImage: post.featuredImage?.startsWith('http') ? post.featuredImage : `http://localhost:5000${post.featuredImage}`,
+          featuredImage: post.featuredImage?.startsWith('http') ? post.featuredImage : `https://shivaay-backend.onrender.com${post.featuredImage}`,
           category: post.category,
           date: new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
           metaTitle: post.metaTitle,

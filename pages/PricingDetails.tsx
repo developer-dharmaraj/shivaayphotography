@@ -19,11 +19,11 @@ const PricingDetails: React.FC = () => {
         ]);
         setPackageData({
           ...currentPackage,
-          image: currentPackage.image?.startsWith('http') ? currentPackage.image : currentPackage.image ? `http://localhost:5000${currentPackage.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
+          image: currentPackage.image?.startsWith('http') ? currentPackage.image : currentPackage.image ? `https://shivaay-backend.onrender.com${currentPackage.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
         });
         setAllPackages(allPkgs.map((pkg: any) => ({
           ...pkg,
-          image: pkg.image?.startsWith('http') ? pkg.image : pkg.image ? `http://localhost:5000${pkg.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
+          image: pkg.image?.startsWith('http') ? pkg.image : pkg.image ? `https://shivaay-backend.onrender.com${pkg.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
         })));
       } catch (error) {
         console.error('Error fetching pricing:', error);
