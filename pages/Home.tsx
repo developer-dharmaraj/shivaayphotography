@@ -1,13 +1,74 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
-import { Camera, Heart, Users, Star, ArrowRight, Play, MapPin } from 'lucide-react';
+import { Camera, Heart, Users, Star, ArrowRight, Play, MapPin, Instagram, Linkedin, Award, Sparkles, Check } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { galleryAPI, teamAPI, pricingAPI } from '../utils/api';
 
 const Home: React.FC = () => {
   const sectionsRef = useRef<HTMLDivElement>(null);
+  const [categories, setCategories] = useState([
+    { title: 'Weddings', img: 'https://instagram.fidr4-3.fna.fbcdn.net/v/t51.75761-15/484788954_17896431744171498_1816914288270789696_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=109&ig_cache_key=MzU4OTk4NzQxNjAyNDkxNjcwOQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTgwMC5zZHIuQzMifQ%3D%3D&_nc_ohc=XF2AEHQoayQQ7kNvwE8yGgo&_nc_oc=Adnh7q06TvV7DPaynDJSA5wcxSElwaJ9PGgZiRUXnZVtiLNUb8tGM-X1nfs0LVpmlIEVpnDJlrnb_kP7JRkxmlV-&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-3.fna&_nc_gid=Nwq_DMvnYXpkPBDSzMIAdg&oh=00_AfvnNQUeyO22jMuUW3G8v4s7Eb-WQ14tG_5T0g5sINm6wg&oe=699DDC70', path: '/portfolio/Wedding' },
+    { title: 'Pre-Wedding', img: 'https://instagram.fidr4-1.fna.fbcdn.net/v/t51.75761-15/491445659_17900567946171498_4730756247710959647_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=106&ig_cache_key=MzYxNjk2MDQwMzM5ODE5OTk4NQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTgwMC5zZHIuQzMifQ%3D%3D&_nc_ohc=gWNQ-ZoeYlwQ7kNvwEPJz_X&_nc_oc=AdmqF3Ea2YmCnD9Fpr4Nfg-Fbk0ao5oK2qYz-tuYKWiDxpWmHGPHJ4EnNnU8ZPJkqeXKY_Uzn0JMBFjcu4Bsv8Rl&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-1.fna&_nc_gid=50mvTTN9BoCjPtUwM6zlug&oh=00_AfsCCrrvAJ67g0dz2EOPM4fd0pROzk5i-3_81wXaSXtdDg&oe=699DD3DF', path: '/portfolio/Pre-Wedding' },
+    { title: 'Commercial', img: 'https://instagram.fidr4-1.fna.fbcdn.net/v/t51.82787-15/515085240_17909034225171498_2474509883217982693_n.jpg?stp=dst-jpg_e35_p640x640_sh0.08_tt6&_nc_cat=111&ig_cache_key=MzY2OTQwODYyNTQxMzM5NTk0Mg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTgwMC5zZHIuQzMifQ%3D%3D&_nc_ohc=W_3Z57uYlFsQ7kNvwEinmq4&_nc_oc=Admt_xm_-ixA9tx0RDmHjsp_WIzSQVtPHo-RcmuRkVoEJprKx7XWs5MUT1CScQnDYjP4iw4NKrFkmzDbLyWxgLjk&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-1.fna&_nc_gid=cr3HRW-brPkvHSUwjz4JCA&oh=00_AfuAVd1ZQNCzSoBvVFs-qfg9WlKPH0fpWR91e0blpoNLEg&oe=699DC70F', path: '/portfolio/Commercial' },
+    { title: 'Events', img: 'https://instagram.fidr4-3.fna.fbcdn.net/v/t51.75761-15/476501479_17892195498171498_2841428995012739696_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=109&ig_cache_key=MzU2NTc4MTU1MTk5NDc4NzY0OA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTAwMS5zZHIuQzMifQ%3D%3D&_nc_ohc=0E5mNUSffOkQ7kNvwHxSFN_&_nc_oc=AdmAwfij0LyHQz0YwujqRBnbiwSFAIDG2BtmI-JGa3oc4sinJ-ov7KWjl2OZbd3poQzaWQJ_7ezhyYDA932SvWQi&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-3.fna&_nc_gid=Jtf4NQ5RMSrF6krTpFBwEQ&oh=00_AfujPX7eRIZ2o09GnsGO-xILOTE-r_wb_-Nci6MRo14ahg&oe=699DE51C', path: '/portfolio/Events' },
+  ]);
+  const [featuredStories, setFeaturedStories] = useState<any[]>([]);
+  const [teams, setTeams] = useState<any[]>([]);
+  const [pricing, setPricing] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch featured gallery items
+    const fetchFeatured = async () => {
+      try {
+        const items = await galleryAPI.getAll(undefined, true);
+        if (items.length >= 2) {
+          setFeaturedStories(items.slice(0, 2).map((item: any) => ({
+            title: item.title,
+            location: item.location || 'Location',
+            img: item.imageUrl?.startsWith('http') ? item.imageUrl : `http://localhost:5000${item.imageUrl}`,
+            tag: item.category
+          })));
+        }
+      } catch (error) {
+        console.error('Error fetching featured:', error);
+      }
+    };
+    
+    // Fetch teams
+    const fetchTeams = async () => {
+      try {
+        const data = await teamAPI.getAll();
+        const normalizedData = data.map((item: any) => ({
+          ...item,
+          image: item.image?.startsWith('http') ? item.image : item.image ? `http://localhost:5000${item.image}` : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop'
+        }));
+        setTeams(normalizedData);
+      } catch (error) {
+        console.error('Error fetching teams:', error);
+      }
+    };
+    
+    // Fetch pricing
+    const fetchPricing = async () => {
+      try {
+        const data = await pricingAPI.getAll();
+        const normalizedData = data.map((item: any) => ({
+          ...item,
+          image: item.image?.startsWith('http') ? item.image : item.image ? `http://localhost:5000${item.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
+        }));
+        setPricing(normalizedData);
+      } catch (error) {
+        console.error('Error fetching pricing:', error);
+      }
+    };
+    
+    fetchFeatured();
+    fetchTeams();
+    fetchPricing();
+  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -39,29 +100,7 @@ const Home: React.FC = () => {
     }, sectionsRef.current || undefined);
     
     return () => ctx.revert();
-  }, []);
-
-  const categories = [
-    { title: 'Weddings', img: 'https://picsum.photos/800/1000?random=2', path: '/portfolio/Wedding' },
-    { title: 'Pre-Wedding', img: 'https://picsum.photos/800/1000?random=3', path: '/portfolio/Pre-Wedding' },
-    { title: 'Commercial', img: 'https://picsum.photos/800/1000?random=4', path: '/portfolio/Commercial' },
-    { title: 'Events', img: 'https://picsum.photos/800/1000?random=5', path: '/portfolio/Events' },
-  ];
-
-  const featuredStories = [
-    {
-      title: "Royal Union at Udaipur",
-      location: "City Palace, Rajasthan",
-      img: "https://picsum.photos/1200/800?random=10",
-      tag: "Wedding"
-    },
-    {
-      title: "Sunset Serenade",
-      location: "Lake Como, Italy",
-      img: "https://picsum.photos/1200/800?random=11",
-      tag: "Pre-Wedding"
-    }
-  ];
+  }, [featuredStories]);
 
   return (
     <div ref={sectionsRef} className="bg-white">
@@ -170,6 +209,129 @@ const Home: React.FC = () => {
                 <p className="text-graphite text-sm font-light leading-relaxed">Limiting our bookings annually to ensure every masterpiece receives undivided artistic focus.</p>
               </div>
            </div>
+        </div>
+      </section>
+
+      {/* Teams Section */}
+      <section className="reveal-section py-32 bg-bone/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-24 reveal-el">
+            <h3 className="text-luxury tracking-[0.5em] uppercase text-[10px] font-bold mb-4">Our Team</h3>
+            <h2 className="text-5xl md:text-6xl font-serif text-charcoal">Meet The <span className="italic">Artists</span></h2>
+            <p className="text-graphite text-lg font-light max-w-2xl mx-auto mt-8 leading-relaxed">
+              A collective of passionate storytellers dedicated to capturing your most precious moments with artistic excellence.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {teams.length > 0 ? teams.map((member, idx) => (
+              <div key={idx} className="reveal-el group">
+                <div className="relative overflow-hidden bg-white shadow-lg mb-6 aspect-[3/4]">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="flex gap-4 mb-4">
+                      {member.instagram && (
+                        <a href={member.instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-luxury/50 flex items-center justify-center hover:bg-luxury hover:border-luxury transition-colors">
+                          <Instagram className="w-4 h-4 text-luxury hover:text-white" />
+                        </a>
+                      )}
+                      {member.linkedin && (
+                        <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-luxury/50 flex items-center justify-center hover:bg-luxury hover:border-luxury transition-colors">
+                          <Linkedin className="w-4 h-4 text-luxury hover:text-white" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h4 className="text-2xl font-serif text-charcoal mb-2">{member.name}</h4>
+                  <p className="text-luxury text-sm uppercase tracking-widest mb-4 font-medium">{member.role}</p>
+                  <p className="text-graphite text-sm font-light leading-relaxed mb-6">{member.bio}</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {member.achievements.map((achievement, i) => (
+                      <span key={i} className="text-[9px] border border-gray-200 px-3 py-1 uppercase tracking-widest text-gray-500 font-bold">
+                        {achievement}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )) : (
+              <div className="col-span-3 text-center py-12 text-graphite">No team members available</div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="reveal-section py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-24 reveal-el">
+            <h3 className="text-luxury tracking-[0.5em] uppercase text-[10px] font-bold mb-4">Investment</h3>
+            <h2 className="text-5xl md:text-6xl font-serif text-charcoal">Pricing <span className="italic">Collections</span></h2>
+            <p className="text-graphite text-lg font-light max-w-2xl mx-auto mt-8 leading-relaxed">
+              Tailored packages designed to preserve your most cherished moments with unparalleled artistry.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {pricing.length > 0 ? pricing.map((plan, idx) => (
+              <Link 
+                to={`/pricing/${plan.slug || plan.name.toLowerCase().replace(/\s+/g, '-')}`}
+                key={idx} 
+                className="reveal-el group relative"
+              >
+                <div className={`relative p-10 flex flex-col h-full border transition-all duration-500 hover:-translate-y-2 ${
+                  plan.popular 
+                    ? 'border-luxury bg-bone shadow-2xl' 
+                    : 'border-gray-200 bg-white hover:border-luxury'
+                }`}>
+                  {plan.popular && (
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-charcoal text-white px-6 py-2 text-[10px] uppercase font-bold tracking-[0.3em] rounded-full flex items-center gap-2">
+                      <Sparkles className="w-3 h-3" />
+                      Most Popular
+                    </div>
+                  )}
+                  
+                  <div className="mb-6">
+                    <h3 className="text-luxury tracking-[0.4em] uppercase text-[10px] font-bold mb-4">{plan.name}</h3>
+                    <div className="flex items-baseline gap-3 mb-2">
+                      <span className="text-4xl font-serif text-charcoal">{plan.price}</span>
+                      {plan.originalPrice && (
+                        <span className="text-lg text-graphite line-through">{plan.originalPrice}</span>
+                      )}
+                    </div>
+                    <p className="text-graphite text-sm font-light">{plan.description}</p>
+                  </div>
+                  
+                  <div className="space-y-4 mb-8 flex-grow">
+                    {plan.features.map((feature, j) => (
+                      <div key={j} className="flex items-start gap-3">
+                        <Check className="w-5 h-5 text-luxury mt-0.5 shrink-0" />
+                        <span className="text-graphite text-sm font-light">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className={`w-full py-4 uppercase tracking-[0.4em] text-[10px] font-bold text-center transition-all ${
+                    plan.popular 
+                      ? 'bg-charcoal text-white group-hover:bg-luxury' 
+                      : 'border border-gray-200 text-charcoal group-hover:border-luxury group-hover:text-luxury'
+                  }`}>
+                    View Details
+                  </div>
+                </div>
+              </Link>
+            )) : (
+              <div className="col-span-3 text-center py-12 text-graphite">No pricing packages available</div>
+            )}
+          </div>
         </div>
       </section>
 

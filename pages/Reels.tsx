@@ -2,33 +2,11 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Reel } from '../types';
 import { Volume2, VolumeX, MapPin, Music2 } from 'lucide-react';
+import { videoAPI } from '../utils/api';
 
-const mockReels: Reel[] = [
-  {
-    id: 'r1',
-    title: 'Eternal Vows in Tuscany',
-    category: 'Wedding',
-    videoUrl: '/videos/r1.mp4',
-    thumbnailUrl: 'https://picsum.photos/400/700?random=201',
-    location: 'Tuscany, Italy'
-  },
-  {
-    id: 'r2',
-    title: 'Sunset Magic at Lake Como',
-    category: 'Pre-Wedding',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-young-couple-walking-on-the-beach-at-sunset-42938-large.mp4',
-    thumbnailUrl: 'https://picsum.photos/400/700?random=202',
-    location: 'Lake Como'
-  },
-  {
-    id: 'r3',
-    title: 'Urban Love Story',
-    category: 'Portrait',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-woman-walking-on-the-street-at-night-42245-large.mp4',
-    thumbnailUrl: 'https://picsum.photos/400/700?random=203',
-    location: 'Mumbai'
-  }
-];
+const Reels: React.FC = () => {
+  const [reels, setReels] = useState<Reel[]>([]);
+  const [loading, setLoading] = useState(true);
 
 const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,15 +27,21 @@ const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive 
   };
 
   return (
-    <div className="relative h-[100%] w-full md:py-5 snap-start  overflow-hidden bg-white flex items-center justify-center">
+    <div className="relative h-screen w-full snap-start overflow-hidden bg-[#050505] flex items-center justify-center">
       {/* Video Background */}
       <video
         ref={videoRef}
         src={reel.videoUrl}
-        className="h-full w-full object-cover :object-contain   md:rounded-lg lg:max-w-[310px] lg:border-x lg:border-white/10"
+        className="h-full w-full object-cover md:rounded-lg lg:max-w-[310px] lg:border-x lg:border-white/10"
         loop
         muted={isMuted}
         playsInline
+        onError={(e) => {
+          console.error('❌ [REELS] Video failed to load:', reel.videoUrl, e);
+        }}
+        onLoadedData={() => {
+          console.log('✅ [REELS] Video loaded:', reel.title, reel.videoUrl);
+        }}
       />
 
       {/* Overlays */}
@@ -72,7 +56,7 @@ const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive 
         <h3 className="text-[15px] font-serif text-white mb-3 tracking-wide">{reel.title}</h3>
         <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-lg w-fit backdrop-blur-sm">
           <Music2 className="w-3 h-3 text-luxury animate-pulse" />
-          <span className="text-[8px] text-gray-400 uppercase tracking-widest">Original Audio • Lumina Studio</span>
+          <span className="text-[8px] text-gray-400 uppercase tracking-widest">Original Audio • Shivaay Photography Studio</span>
         </div>
       </div>
 
@@ -94,21 +78,61 @@ const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive 
   );
 };
 
-const Reels: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const fetchReels = async () => {
+      try {
+        setLoading(true);
+        const data = await videoAPI.getAll();
+        console.log('📹 [REELS] Fetched videos:', data.length, data);
+        const transformed = data.map((video: any) => ({
+          id: video._id || video.id,
+          title: video.title,
+          category: video.category,
+          videoUrl: video.videoUrl?.startsWith('http') ? video.videoUrl : `http://localhost:5000${video.videoUrl}`,
+          thumbnailUrl: video.thumbnailUrl?.startsWith('http') ? video.thumbnailUrl : `http://localhost:5000${video.thumbnailUrl}`,
+          location: video.location || 'Location'
+        }));
+        console.log('📹 [REELS] Transformed reels:', transformed.length, transformed);
+        setReels(transformed);
+      } catch (error) {
+        console.error('❌ [REELS] Error fetching videos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReels();
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return;
-      const index = Math.round(containerRef.current.scrollTop / window.innerHeight);
+      const scrollTop = containerRef.current.scrollTop;
+      const windowHeight = window.innerHeight;
+      const index = Math.round(scrollTop / windowHeight);
       setActiveIndex(index);
     };
 
     const el = containerRef.current;
-    el?.addEventListener('scroll', handleScroll);
-    return () => el?.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (el) {
+      el.addEventListener('scroll', handleScroll);
+      // Initial check
+      handleScroll();
+    }
+    return () => {
+      if (el) el.removeEventListener('scroll', handleScroll);
+    };
+  }, [reels]);
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full bg-[#050505] flex items-center justify-center text-white">
+        Loading videos...
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-full bg-[#050505] overflow-hidden md:pl-24">
@@ -117,7 +141,7 @@ const Reels: React.FC = () => {
         className="h-full w-full overflow-y-scroll snap-y snap-mandatory hide-scrollbar"
         data-lenis-prevent // Prevent Lenis from interfering with snap scroll
       >
-        {mockReels.map((reel, index) => (
+        {reels.map((reel, index) => (
           <ReelItem 
             key={reel.id} 
             reel={reel} 
@@ -127,7 +151,7 @@ const Reels: React.FC = () => {
 
         {/* Floating Indicator */}
         <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50 pointer-events-none hidden lg:flex">
-          {mockReels.map((_, i) => (
+          {reels.map((_, i) => (
             <div 
               key={i} 
               className={`w-1 transition-all duration-500 ${activeIndex === i ? 'h-8 bg-luxury' : 'h-2 bg-white/20'}`} 

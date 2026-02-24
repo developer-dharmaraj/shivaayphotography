@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { inquiryAPI } from '../utils/api';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -11,11 +12,23 @@ const Contact: React.FC = () => {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form data:', formData);
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      await inquiryAPI.create({
+        ...formData,
+        eventDate: formData.eventDate || undefined
+      });
+      setSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', eventDate: '', message: '' });
+    } catch (error: any) {
+      alert('Error submitting inquiry: ' + (error.message || 'Unknown error'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,7 +46,7 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-charcoal uppercase tracking-widest text-[10px] font-bold mb-1">Email Us</h4>
-                  <p className="text-graphite">hello@lumina-studio.com</p>
+                  <p className="text-graphite">contact@shivaay.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-6">
@@ -42,7 +55,7 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-charcoal uppercase tracking-widest text-[10px] font-bold mb-1">Call Us</h4>
-                  <p className="text-graphite">+91 99999 99999</p>
+                  <p className="text-graphite">+91 6378960233</p>
                 </div>
               </div>
               <div className="flex items-start gap-6">
@@ -51,14 +64,14 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-charcoal uppercase tracking-widest text-[10px] font-bold mb-1">Visit Studio</h4>
-                  <p className="text-graphite">Empire Heights, SB Marg, Mumbai</p>
+                  <p className="text-graphite">Bus Stand,Pratapgarh 312605 , Rajasthan</p>
                 </div>
               </div>
             </div>
 
             <div className="w-full h-80 bg-bone border border-gray-100 grayscale hover:grayscale-0 transition-all duration-700 shadow-sm">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.603348633718!2d72.8258215!3d18.9912196!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7ce866a4f5f5f%3A0x60067645830953a7!2sSenapati%20Bapat%20Marg%2C%20Mumbai!5e0!3m2!1sen!2sin!4v1641234567890!5m2!1sen!2sin" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d52761.52261879361!2d74.69353496845618!3d24.03243072968201!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396685f86c8f3b8b%3A0x95cf89ea205562bd!2sPratapgarh%2C%20Rajasthan%20312605!5e1!3m2!1sen!2sin!4v1771570040908!5m2!1sen!2sin" 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
@@ -126,8 +139,8 @@ const Contact: React.FC = () => {
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                   />
                 </div>
-                <button type="submit" className="w-full bg-charcoal text-white py-5 uppercase tracking-[0.4em] text-[10px] font-bold hover:bg-luxury transition-all flex items-center justify-center gap-4">
-                  Send Inquiry <Send className="w-4 h-4" />
+                <button type="submit" disabled={loading} className="w-full bg-charcoal text-white py-5 uppercase tracking-[0.4em] text-[10px] font-bold hover:bg-luxury transition-all flex items-center justify-center gap-4 disabled:opacity-50">
+                  {loading ? 'Sending...' : 'Send Inquiry'} <Send className="w-4 h-4" />
                 </button>
               </form>
             ) : (

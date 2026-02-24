@@ -1,11 +1,32 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { bannerAPI } from '../utils/api';
 
 const Hero: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
+  const [banner, setBanner] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchBanner = async () => {
+      try {
+        const banners = await bannerAPI.getAll();
+        if (banners.length > 0) {
+          const activeBanner = banners[0];
+          setBanner({
+            ...activeBanner,
+            imageUrl: activeBanner.imageUrl?.startsWith('http') ? activeBanner.imageUrl : `http://localhost:5000${activeBanner.imageUrl}`,
+            videoUrl: activeBanner.videoUrl?.startsWith('http') ? activeBanner.videoUrl : activeBanner.videoUrl ? `http://localhost:5000${activeBanner.videoUrl}` : null
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching banner:', error);
+      }
+    };
+    fetchBanner();
+  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -59,25 +80,39 @@ const Hero: React.FC = () => {
       {/* Cinematic Video Background */}
       <div className="hero-bg-container absolute inset-0 z-0">
         <div className="absolute inset-0 bg-white/30 z-10" />
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover grayscale-[0.2] brightness-110">
-          <source src="https://res.cloudinary.com/dppcmxdhi/video/upload/v1771392399/WhatsApp_Video_2026-02-16_at_13.06.54_nnybeo.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {banner?.videoUrl ? (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover grayscale-[0.2] brightness-110">
+            <source src={banner.videoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : banner?.imageUrl ? (
+          <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover grayscale-[0.2] brightness-110" />
+        ) : (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover grayscale-[0.2] brightness-110">
+            <source src="https://res.cloudinary.com/dppcmxdhi/video/upload/v1771392399/WhatsApp_Video_2026-02-16_at_13.06.54_nnybeo.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
       </div>
 
       <div className="relative z-20 text-center px-6">
         <div className="hero-line w-20 h-[1.5px] bg-luxury mx-auto mb-8" />
-        <h2 className="hero-title text-luxury tracking-[0.5em] uppercase text-[10px] md:text-xs mb-4 font-sans font-bold">Fine Art Photographer</h2>
+        <h2 className="hero-title text-luxury tracking-[0.5em] uppercase text-[10px] md:text-xs mb-4 font-sans font-bold">{banner?.subtitle || 'Fine Art Photographer'}</h2>
         <h1 className="hero-title text-6xl md:text-8xl lg:text-[10rem] font-serif text-charcoal tracking-tight mb-8 leading-[0.9]">
-          Pure <span className="italic font-normal">Moments</span>
+          {banner?.title || 'Pure'} <span className="italic font-normal">{banner?.title ? '' : 'Moments'}</span>
         </h1>
         <p className="hero-title text-graphite max-w-xl mx-auto text-lg md:text-xl font-light leading-relaxed mb-12">
-          Documenting the essence of your journey with timeless editorial elegance.
+          {banner?.description || 'Documenting the essence of your journey with timeless editorial elegance.'}
         </p>
         <div className="hero-btn flex flex-col md:flex-row gap-8 justify-center items-center">
           <Link to="/portfolio" className="group relative px-12 py-5 overflow-hidden bg-charcoal">

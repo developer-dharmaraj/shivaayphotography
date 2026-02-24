@@ -4,8 +4,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lumina | Luxury Wedding & Destination Photography</title>
-    <meta name="description" content="Lumina Studio - Premium Luxury Wedding and Destination Photographer. Capturing cinematic moments across the globe." />
+    <title>shivaay Photography | shivaay Wedding & Destination Photography</title>
+    <link rel="shortcut icon" href="./logo.png" type="image/x-icon">
+    <meta name="description" content="shivaay Photography  Studio - Premium Luxury Wedding and Destination Photographer. Capturing cinematic moments across the globe." />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
     <script>
@@ -59,7 +60,56 @@
       html {
         overscroll-behavior-y: none;
       }
+      /* Image Protection */
+      img {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+        -webkit-user-drag: none !important;
+        -khtml-user-drag: none !important;
+        -moz-user-drag: none !important;
+        -o-user-drag: none !important;
+        user-drag: none !important;
+        pointer-events: auto !important;
+      }
+      img::selection {
+        background: transparent !important;
+      }
+      img::-moz-selection {
+        background: transparent !important;
+      }
     </style>
+    <script>
+      // Disable right click globally
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      });
+
+      // Disable keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        // Disable Ctrl+S, Ctrl+P, Ctrl+U, F12, Ctrl+Shift+I, Ctrl+Shift+C
+        if ((e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'u')) ||
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C'))) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // Disable image dragging
+      document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('img');
+        images.forEach(function(img) {
+          img.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+          });
+          img.setAttribute('draggable', 'false');
+        });
+      });
+    </script>
   <script type="importmap">
 {
   "imports": {

@@ -1,48 +1,39 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BlogPost } from '../types';
-
-const mockBlogs: BlogPost[] = [
-  {
-    id: '1',
-    title: 'Top 10 Destination Wedding Locations in India 2025',
-    slug: 'top-10-destination-wedding-india',
-    excerpt: 'Explore the most breathtaking and luxurious venues from Udaipur to Goa for your dream wedding.',
-    content: '',
-    featuredImage: 'https://picsum.photos/1200/800?random=40',
-    category: 'Guides',
-    date: 'March 15, 2024',
-    metaTitle: 'Best Wedding Locations India | Lumina Blog',
-    metaDescription: 'Discover luxury destination wedding venues in India.'
-  },
-  {
-    id: '2',
-    title: 'How to Prepare for Your Pre-Wedding Photoshoot',
-    slug: 'pre-wedding-photoshoot-tips',
-    excerpt: 'Everything you need to know about outfits, lighting, and locations to make your pre-wedding shoot magical.',
-    content: '',
-    featuredImage: 'https://picsum.photos/1200/800?random=41',
-    category: 'Photography Tips',
-    date: 'February 28, 2024',
-    metaTitle: 'Pre-Wedding Shoot Tips | Lumina Blog',
-    metaDescription: 'Preparation tips for pre-wedding photography.'
-  },
-  {
-    id: '3',
-    title: 'The Rise of Cinematic Wedding Films',
-    slug: 'cinematic-wedding-films-trend',
-    excerpt: 'Why couples are choosing storytelling films over traditional videography in modern luxury weddings.',
-    content: '',
-    featuredImage: 'https://picsum.photos/1200/800?random=42',
-    category: 'Trends',
-    date: 'January 10, 2024',
-    metaTitle: 'Wedding Cinema Trends | Lumina Blog',
-    metaDescription: 'Latest trends in cinematic wedding videography.'
-  }
-];
+import { blogAPI } from '../utils/api';
 
 const Blog: React.FC = () => {
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const data = await blogAPI.getAll();
+        const transformed = data.map((post: any) => ({
+          id: post._id || post.id,
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+          content: post.content,
+          featuredImage: post.featuredImage?.startsWith('http') ? post.featuredImage : `http://localhost:5000${post.featuredImage}`,
+          category: post.category,
+          date: new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+          metaTitle: post.metaTitle,
+          metaDescription: post.metaDescription
+        }));
+        setBlogs(transformed);
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlogs();
+  }, []);
+
   return (
     <div className="pt-40 pb-24 min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6">
@@ -51,8 +42,11 @@ const Blog: React.FC = () => {
           <h1 className="text-6xl md:text-8xl font-serif text-charcoal mb-8">The <span className="italic">Journal</span></h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {mockBlogs.map((post) => (
+        {loading ? (
+          <div className="text-center py-20 text-gray-400">Loading blogs...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {blogs.map((post) => (
             <article key={post.id} className="group cursor-pointer">
               <Link to={`/blog/${post.slug}`}>
                 <div className="aspect-[16/10] overflow-hidden mb-6 relative bg-bone shadow-sm">
@@ -76,7 +70,8 @@ const Blog: React.FC = () => {
               </Link>
             </article>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

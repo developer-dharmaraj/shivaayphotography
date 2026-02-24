@@ -1,10 +1,39 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Share2, Instagram, Facebook } from 'lucide-react';
+import { blogAPI } from '../utils/api';
 
 const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [blog, setBlog] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlog = async () => {
+      if (!slug) return;
+      try {
+        const data = await blogAPI.getBySlug(slug);
+        setBlog({
+          ...data,
+          featuredImage: data.featuredImage?.startsWith('http') ? data.featuredImage : `http://localhost:5000${data.featuredImage}`
+        });
+      } catch (error) {
+        console.error('Error fetching blog:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlog();
+  }, [slug]);
+
+  if (loading) {
+    return <div className="pt-40 pb-24 min-h-screen bg-white text-center">Loading...</div>;
+  }
+
+  if (!blog) {
+    return <div className="pt-40 pb-24 min-h-screen bg-white text-center">Blog post not found</div>;
+  }
 
   return (
     <div className="pt-40 pb-24 min-h-screen bg-white">
@@ -15,45 +44,24 @@ const BlogPostPage: React.FC = () => {
 
         <header className="mb-12">
           <div className="flex items-center gap-4 text-[10px] text-luxury uppercase tracking-[0.4em] font-bold mb-6">
-            <span>Photography Tips</span>
+            <span>{blog.category}</span>
             <div className="w-8 h-[1px] bg-luxury/30" />
-            <span>March 15, 2024</span>
+            <span>{new Date(blog.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-serif text-charcoal mb-8 leading-tight">
-            How to Capture the Soul of Your Luxury Destination Wedding
+            {blog.title}
           </h1>
           <p className="text-xl text-graphite font-light italic leading-relaxed">
-            "Photography is not just looking, it's feeling. If you can't feel what you're looking at, then you're never going to get others to feel anything when they look at your pictures."
+            {blog.excerpt}
           </p>
         </header>
 
         <div className="aspect-[16/9] w-full overflow-hidden mb-16 relative bg-bone shadow-sm">
-          <img src="https://picsum.photos/1600/900?random=100" className="w-full h-full object-cover" alt="Post Hero" />
+          <img src={blog.featuredImage} className="w-full h-full object-cover" alt={blog.title} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-16">
-          <div className="prose max-w-none text-graphite font-light leading-loose space-y-8">
-            <p>
-              Destination weddings represent a unique intersection of travel, luxury, and intimacy. Capturing these events requires a specialized eye that understands the environment as much as the emotions. 
-            </p>
-            <h2 className="text-3xl font-serif text-charcoal mt-12 mb-6 uppercase tracking-wider">The Golden Hour in Exotic Locales</h2>
-            <p>
-              Whether you're in the rolling hills of Tuscany or the majestic palaces of Rajasthan, lighting is your primary tool. We always recommend scheduling your main portrait sessions during the 45 minutes before sunset. This "Golden Hour" provides a soft, warm glow that flatters skin tones and adds a cinematic texture to every frame.
-            </p>
-            <div className="grid grid-cols-2 gap-4 my-12">
-              <img src="https://picsum.photos/600/800?random=101" className="w-full h-auto shadow-lg" alt="Gallery 1" />
-              <img src="https://picsum.photos/600/800?random=102" className="w-full h-auto mt-12 shadow-lg" alt="Gallery 2" />
-            </div>
-            <p>
-              Intimacy is often found in the "in-between" moments. The way the groom adjusts his cufflink, the brief glance of the bride's father before she enters the aisle, or the laughter shared over champagne in the bridal suite. These are the moments that truly tell the story of the day.
-            </p>
-            <blockquote className="border-l-4 border-luxury pl-8 my-12 italic text-2xl font-serif text-charcoal">
-              "Great photography is about being in the moment, not just capturing it."
-            </blockquote>
-            <p>
-              In luxury destination weddings, the venue is a character in your story. We use wide-angle perspectives to establish the grandeur of the location, balanced with tight macros of the decor—the hand-lettered place cards, the exotic floral arrangements, and the architectural details that make your chosen venue special.
-            </p>
-          </div>
+          <div className="prose max-w-none text-graphite font-light leading-loose space-y-8" dangerouslySetInnerHTML={{ __html: blog.content || blog.excerpt }} />
 
           <aside className="space-y-12">
             <div>
@@ -67,7 +75,7 @@ const BlogPostPage: React.FC = () => {
             
             <div>
               <h4 className="text-charcoal uppercase tracking-[0.3em] text-[10px] font-bold mb-6 border-b border-gray-100 pb-2">Category</h4>
-              <span className="text-luxury text-[10px] uppercase tracking-widest font-bold">Photography Guides</span>
+              <span className="text-luxury text-[10px] uppercase tracking-widest font-bold">{blog.category}</span>
             </div>
 
             <div>

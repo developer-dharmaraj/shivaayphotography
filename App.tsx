@@ -9,9 +9,8 @@ import Portfolio from './pages/Portfolio';
 import Blog from './pages/Blog';
 import BlogPostPage from './pages/BlogPostPage';
 import Contact from './pages/Contact';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
 import Pricing from './pages/Pricing';
+import PricingDetails from './pages/PricingDetails';
 import Reels from './pages/Reels';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
@@ -94,6 +93,144 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const isReelsPage = location.pathname === '/reels';
 
+  useEffect(() => {
+    // Image Protection - Disable right click, save, download
+    const disableRightClick = (e: MouseEvent) => {
+      if (e.button === 2) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    const disableContextMenu = (e: Event) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const disableDragStart = (e: DragEvent) => {
+      if (e.target instanceof HTMLImageElement) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    const disableSelectStart = (e: Event) => {
+      if (e.target instanceof HTMLImageElement) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    // Disable keyboard shortcuts
+    const disableKeyboardShortcuts = (e: KeyboardEvent) => {
+      // Disable Ctrl+S (Save)
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        return false;
+      }
+      // Disable Ctrl+P (Print)
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        return false;
+      }
+      // Disable Ctrl+Shift+I (Developer Tools)
+      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        e.preventDefault();
+        return false;
+      }
+      // Disable F12 (Developer Tools)
+      if (e.key === 'F12') {
+        e.preventDefault();
+        return false;
+      }
+      // Disable Ctrl+Shift+C (Inspect Element)
+      if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+        e.preventDefault();
+        return false;
+      }
+      // Disable Ctrl+U (View Source)
+      if (e.ctrlKey && e.key === 'u') {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    // Add CSS to disable image selection and dragging
+    const style = document.createElement('style');
+    style.textContent = `
+      img {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+        -webkit-user-drag: none !important;
+        -khtml-user-drag: none !important;
+        -moz-user-drag: none !important;
+        -o-user-drag: none !important;
+        user-drag: none !important;
+        pointer-events: auto !important;
+      }
+      img::selection {
+        background: transparent !important;
+      }
+      img::-moz-selection {
+        background: transparent !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Add event listeners
+    document.addEventListener('contextmenu', disableContextMenu);
+    document.addEventListener('mousedown', disableRightClick);
+    document.addEventListener('dragstart', disableDragStart);
+    document.addEventListener('selectstart', disableSelectStart);
+    document.addEventListener('keydown', disableKeyboardShortcuts);
+
+    // Disable right click on images specifically
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+      img.addEventListener('contextmenu', disableContextMenu);
+      img.addEventListener('dragstart', disableDragStart);
+      img.setAttribute('draggable', 'false');
+    });
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('contextmenu', disableContextMenu);
+      document.removeEventListener('mousedown', disableRightClick);
+      document.removeEventListener('dragstart', disableDragStart);
+      document.removeEventListener('selectstart', disableSelectStart);
+      document.removeEventListener('keydown', disableKeyboardShortcuts);
+      document.head.removeChild(style);
+    };
+  }, []);
+
+  // Monitor for new images added dynamically
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node instanceof HTMLElement) {
+            const images = node.querySelectorAll('img');
+            images.forEach(img => {
+              img.addEventListener('contextmenu', (e) => e.preventDefault());
+              img.addEventListener('dragstart', (e) => e.preventDefault());
+              img.setAttribute('draggable', 'false');
+            });
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-white text-charcoal selection:bg-luxury selection:text-white">
       <Navbar />
@@ -107,15 +244,14 @@ const AppContent: React.FC = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/pricing/:slug" element={<PricingDetails />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </main>
       {!isReelsPage && <Footer />}
       {!isReelsPage && (
         <a 
-          href="https://wa.me/919999999999" 
+          href="https://wa.me/6378960233" 
           target="_blank" 
           rel="noopener noreferrer"
           className="fixed bottom-6 right-6 z-50 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"

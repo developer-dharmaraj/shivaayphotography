@@ -104,8 +104,8 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Socials */}
         <div className={`hidden md:flex items-center transition-all ${isReelsPage ? 'flex-col gap-6 mt-auto' : 'gap-4 ml-8 border-l border-gray-100 pl-8'}`}>
-          <a href="#" className="text-gray-400 hover:text-luxury transition-colors"><Instagram className="w-4 h-4" /></a>
-          <a href="#" className="text-gray-400 hover:text-luxury transition-colors"><Facebook className="w-4 h-4" /></a>
+          <a href="https://www.instagram.com/shivaay_photography_ptg/" className="text-gray-400 hover:text-luxury transition-colors"><Instagram className="w-4 h-4" /></a>
+          <a href="https://www.instagram.com/shivaay_photography_ptg/" className="text-gray-400 hover:text-luxury transition-colors"><Facebook className="w-4 h-4" /></a>
         </div>
 
         {/* Hamburger Button - Outside for triggering, hide when open if using internal close button */}
@@ -130,7 +130,7 @@ const Navbar: React.FC = () => {
           <div className="w-full flex items-center justify-between px-6 py-8">
             <div className="flex items-center gap-3">
               <Camera className="w-6 h-6 text-luxury" />
-              <span className="font-serif tracking-[0.2em] font-bold text-charcoal uppercase text-sm">Lumina</span>
+              <span className="font-serif tracking-[0.2em] font-bold text-charcoal uppercase text-sm">shivaay Photography</span>
             </div>
             <button 
               onClick={() => setIsOpen(false)}
@@ -160,7 +160,7 @@ const Navbar: React.FC = () => {
             </div>
 
             <div className="mt-8 text-[9px] tracking-[0.6em] text-luxury uppercase font-bold opacity-60">
-              Lumina Fine Art Studio
+              shivaay Photography Fine Art Studio
             </div>
           </div>
         </div>

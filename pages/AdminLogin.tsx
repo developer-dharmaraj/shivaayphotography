@@ -2,19 +2,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, Lock, Mail } from 'lucide-react';
+import { authAPI } from '../utils/api';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would verify credentials with the backend
-    if (email === 'admin@lumina.com' && password === 'admin') {
+    setLoading(true);
+    try {
+      const response = await authAPI.login(email, password);
+      localStorage.setItem('adminToken', response.token);
       navigate('/admin/dashboard');
-    } else {
-      alert('Invalid Credentials. Use admin@lumina.com / admin');
+    } catch (error: any) {
+      alert(error.message || 'Invalid credentials. Use admin@lumina.com / admin');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,8 +62,8 @@ const AdminLogin: React.FC = () => {
             />
           </div>
           
-          <button type="submit" className="w-full bg-luxury text-black py-4 uppercase tracking-[0.4em] text-xs font-bold hover:bg-white transition-all">
-            Enter Dashboard
+          <button type="submit" disabled={loading} className="w-full bg-luxury text-black py-4 uppercase tracking-[0.4em] text-xs font-bold hover:bg-white transition-all disabled:opacity-50">
+            {loading ? 'Logging in...' : 'Enter Dashboard'}
           </button>
         </form>
 

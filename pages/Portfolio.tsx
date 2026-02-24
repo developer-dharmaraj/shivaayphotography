@@ -4,29 +4,63 @@ import { useParams } from 'react-router-dom';
 import { GalleryItem } from '../types';
 import { gsap } from 'gsap';
 import { X, Maximize2, ZoomIn } from 'lucide-react';
-
-const mockGallery: GalleryItem[] = [
-  { id: '1', title: 'Silk & Sand', category: 'Pre-Wedding', imageUrl: 'https://picsum.photos/800/1200?random=11', featured: true, aspectRatio: 'portrait' },
-  { id: '2', title: 'Golden Hour', category: 'Wedding', imageUrl: 'https://picsum.photos/1200/800?random=12', featured: true, aspectRatio: 'landscape' },
-  { id: '3', title: 'Editorial Chic', category: 'Commercial', imageUrl: 'https://picsum.photos/800/1200?random=13', featured: false, aspectRatio: 'portrait' },
-  { id: '4', title: 'Parisian Glow', category: 'Wedding', imageUrl: 'https://picsum.photos/800/800?random=14', featured: true, aspectRatio: 'square' },
-  { id: '5', title: 'Urban Light', category: 'Commercial', imageUrl: 'https://picsum.photos/800/1200?random=15', featured: false, aspectRatio: 'portrait' },
-  { id: '6', title: 'Lake Como', category: 'Events', imageUrl: 'https://picsum.photos/1200/800?random=16', featured: true, aspectRatio: 'landscape' },
-  { id: '7', title: 'Heritage Bride', category: 'Wedding', imageUrl: 'https://picsum.photos/800/1200?random=17', featured: true, aspectRatio: 'portrait' },
-];
+import { galleryAPI } from '../utils/api';
 
 const Portfolio: React.FC = () => {
   const { category } = useParams<{ category?: string }>();
   const [activeFilter, setActiveFilter] = useState<string>(category || 'All');
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const portfolioRef = useRef<HTMLDivElement>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
 
   const filters = ['All', 'Wedding', 'Pre-Wedding', 'Events', 'Commercial', 'Portrait'];
 
-  const filteredImages = activeFilter === 'All' 
-    ? mockGallery 
-    : mockGallery.filter(img => img.category === activeFilter);
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        setLoading(true);
+        const data = await galleryAPI.getAll(activeFilter === 'All' ? undefined : activeFilter);
+        // Transform API data to match GalleryItem type
+        const transformed = data.map((item: any) => {
+          // Construct full image URL
+          let imageUrl = item.imageUrl;
+          if (imageUrl && !imageUrl.startsWith('http')) {
+            // Ensure the URL starts with /uploads
+            if (!imageUrl.startsWith('/')) {
+              imageUrl = '/' + imageUrl;
+            }
+            imageUrl = `http://localhost:5000${imageUrl}`;
+          }
+          
+          // Debug logging
+          console.log('Gallery item:', {
+            title: item.title,
+            originalImageUrl: item.imageUrl,
+            constructedImageUrl: imageUrl
+          });
+          
+          return {
+            id: item._id || item.id,
+            title: item.title,
+            category: item.category,
+            imageUrl: imageUrl,
+            featured: item.featured,
+            aspectRatio: item.aspectRatio || 'portrait'
+          };
+        });
+        setGalleryItems(transformed);
+      } catch (error) {
+        console.error('Error fetching gallery:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGallery();
+  }, [activeFilter]);
+
+  const filteredImages = galleryItems;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -86,8 +120,11 @@ const Portfolio: React.FC = () => {
           </div>
         </div>
 
-        <div ref={portfolioRef} className="columns-1 md:columns-2 lg:columns-3 gap-6">
-          {filteredImages.map((img) => (
+        {loading ? (
+          <div className="text-center py-20 text-gray-400">Loading gallery...</div>
+        ) : (
+          <div ref={portfolioRef} className="columns-1 md:columns-2 lg:columns-3 gap-6">
+            {filteredImages.map((img) => (
             <div 
               key={img.id} 
               onClick={() => setSelectedImage(img)}
@@ -98,6 +135,22 @@ const Portfolio: React.FC = () => {
                 alt={img.title} 
                 className="w-full h-auto object-cover transition-all duration-1000 grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105"
                 loading="lazy"
+                onError={(e) => {
+                  console.error('Image failed to load:', img.imageUrl);
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  // Show placeholder or error message
+                  const parent = target.parentElement;
+                  if (parent) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500 text-sm';
+                    errorDiv.textContent = 'Image not found';
+                    parent.appendChild(errorDiv);
+                  }
+                }}
+                onLoad={() => {
+                  console.log('Image loaded successfully:', img.imageUrl);
+                }}
               />
               
               {/* Premium Hover Overlay */}
@@ -112,7 +165,8 @@ const Portfolio: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Premium Lightbox Preview */}
@@ -140,9 +194,21 @@ const Portfolio: React.FC = () => {
                 src={selectedImage.imageUrl} 
                 alt={selectedImage.title} 
                 className="max-w-full max-h-full object-contain shadow-2xl border border-gray-100"
+                onError={(e) => {
+                  console.error('Lightbox image failed to load:', selectedImage.imageUrl);
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'text-center text-gray-500 p-8';
+                    errorDiv.innerHTML = '<p class="text-lg mb-2">Image not found</p><p class="text-sm">' + selectedImage.imageUrl + '</p>';
+                    parent.appendChild(errorDiv);
+                  }
+                }}
               />
               <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-md px-4 py-1 border border-luxury/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-[10px] text-luxury uppercase tracking-widest font-bold">Lumina Archive</span>
+                <span className="text-[10px] text-luxury uppercase tracking-widest font-bold">Shivaay Photography Archive</span>
               </div>
             </div>
 
