@@ -9,12 +9,7 @@ import { galleryAPI, teamAPI, pricingAPI } from '../utils/api';
 
 const Home: React.FC = () => {
   const sectionsRef = useRef<HTMLDivElement>(null);
-  const [categories, setCategories] = useState([
-    { title: 'Weddings', img: 'https://instagram.fidr4-3.fna.fbcdn.net/v/t51.75761-15/484788954_17896431744171498_1816914288270789696_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=109&ig_cache_key=MzU4OTk4NzQxNjAyNDkxNjcwOQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTgwMC5zZHIuQzMifQ%3D%3D&_nc_ohc=XF2AEHQoayQQ7kNvwE8yGgo&_nc_oc=Adnh7q06TvV7DPaynDJSA5wcxSElwaJ9PGgZiRUXnZVtiLNUb8tGM-X1nfs0LVpmlIEVpnDJlrnb_kP7JRkxmlV-&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-3.fna&_nc_gid=Nwq_DMvnYXpkPBDSzMIAdg&oh=00_AfvnNQUeyO22jMuUW3G8v4s7Eb-WQ14tG_5T0g5sINm6wg&oe=699DDC70', path: '/portfolio/Wedding' },
-    { title: 'Pre-Wedding', img: 'https://instagram.fidr4-1.fna.fbcdn.net/v/t51.75761-15/491445659_17900567946171498_4730756247710959647_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=106&ig_cache_key=MzYxNjk2MDQwMzM5ODE5OTk4NQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTgwMC5zZHIuQzMifQ%3D%3D&_nc_ohc=gWNQ-ZoeYlwQ7kNvwEPJz_X&_nc_oc=AdmqF3Ea2YmCnD9Fpr4Nfg-Fbk0ao5oK2qYz-tuYKWiDxpWmHGPHJ4EnNnU8ZPJkqeXKY_Uzn0JMBFjcu4Bsv8Rl&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-1.fna&_nc_gid=50mvTTN9BoCjPtUwM6zlug&oh=00_AfsCCrrvAJ67g0dz2EOPM4fd0pROzk5i-3_81wXaSXtdDg&oe=699DD3DF', path: '/portfolio/Pre-Wedding' },
-    { title: 'Commercial', img: 'https://instagram.fidr4-1.fna.fbcdn.net/v/t51.82787-15/515085240_17909034225171498_2474509883217982693_n.jpg?stp=dst-jpg_e35_p640x640_sh0.08_tt6&_nc_cat=111&ig_cache_key=MzY2OTQwODYyNTQxMzM5NTk0Mg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTgwMC5zZHIuQzMifQ%3D%3D&_nc_ohc=W_3Z57uYlFsQ7kNvwEinmq4&_nc_oc=Admt_xm_-ixA9tx0RDmHjsp_WIzSQVtPHo-RcmuRkVoEJprKx7XWs5MUT1CScQnDYjP4iw4NKrFkmzDbLyWxgLjk&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-1.fna&_nc_gid=cr3HRW-brPkvHSUwjz4JCA&oh=00_AfuAVd1ZQNCzSoBvVFs-qfg9WlKPH0fpWR91e0blpoNLEg&oe=699DC70F', path: '/portfolio/Commercial' },
-    { title: 'Events', img: 'https://instagram.fidr4-3.fna.fbcdn.net/v/t51.75761-15/476501479_17892195498171498_2841428995012739696_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=109&ig_cache_key=MzU2NTc4MTU1MTk5NDc4NzY0OA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTAwMS5zZHIuQzMifQ%3D%3D&_nc_ohc=0E5mNUSffOkQ7kNvwHxSFN_&_nc_oc=AdmAwfij0LyHQz0YwujqRBnbiwSFAIDG2BtmI-JGa3oc4sinJ-ov7KWjl2OZbd3poQzaWQJ_7ezhyYDA932SvWQi&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fidr4-3.fna&_nc_gid=Jtf4NQ5RMSrF6krTpFBwEQ&oh=00_AfujPX7eRIZ2o09GnsGO-xILOTE-r_wb_-Nci6MRo14ahg&oe=699DE51C', path: '/portfolio/Events' },
-  ]);
+  const [categories, setCategories] = useState([]);
   const [featuredStories, setFeaturedStories] = useState<any[]>([]);
   const [teams, setTeams] = useState<any[]>([]);
   const [pricing, setPricing] = useState<any[]>([]);
@@ -23,8 +18,7 @@ const Home: React.FC = () => {
     // Fetch featured gallery items
     const fetchFeatured = async () => {
       try {
-        const items = await galleryAPI.getAll(undefined, true);
-        console.log('📸 [FEATURED] Fetched items:', items.length, items);
+        const items = await galleryAPI.getAll(undefined, true); 
         
         if (items && items.length > 0) {
           const featured = items.slice(0, 2).map((item: any) => {
@@ -39,14 +33,12 @@ const Home: React.FC = () => {
               img: img || '',
               tag: item.category
             };
-          });
-          console.log('📸 [FEATURED] Setting featured stories:', featured);
+          }); 
+          setCategories(featured)
           setFeaturedStories(featured);
-        } else {
-          console.warn('⚠️ [FEATURED] No featured items found');
-        }
+        }  
       } catch (error) {
-        console.error('❌ [FEATURED] Error fetching featured:', error);
+        console.error(' [FEATURED] Error fetching featured:', error);
       }
     };
     
@@ -128,8 +120,7 @@ const Home: React.FC = () => {
   }, [featuredStories]);
 
   // Debug: Log featuredStories whenever it changes
-  useEffect(() => {
-    console.log('🔄 [FEATURED] featuredStories updated:', featuredStories.length, featuredStories);
+  useEffect(() => { 
   }, [featuredStories]);
 
   return (
