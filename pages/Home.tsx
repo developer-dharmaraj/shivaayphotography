@@ -9,6 +9,8 @@ import { galleryAPI, teamAPI, pricingAPI } from '../utils/api';
 
 const Home: React.FC = () => {
   const sectionsRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   const [categories, setCategories] = useState([]);
   const [featuredStories, setFeaturedStories] = useState<any[]>([]);
   const [teams, setTeams] = useState<any[]>([]);
@@ -161,9 +163,55 @@ const Home: React.FC = () => {
     return () => ctx.revert();
   }, [featuredStories]);
 
-  // Debug: Log featuredStories whenever it changes
-  useEffect(() => { 
-  }, [featuredStories]);
+  // Video play on hover and viewport intersection
+  useEffect(() => {
+    const video = videoRef.current;
+    const container = videoContainerRef.current;
+    if (!video || !container) return;
+
+    // Intersection Observer for mobile/scroll detection
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Video is visible in viewport
+            video.play().catch(() => {
+              // Auto-play might be blocked, that's okay
+            });
+          } else {
+            // Video is out of viewport
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.5, // Play when 50% visible
+      }
+    );
+
+    observer.observe(container);
+
+    // Hover handlers for desktop
+    const handleMouseEnter = () => {
+      video.play().catch(() => {});
+    };
+
+    const handleMouseLeave = () => {
+      // Only pause if not in viewport (for mobile)
+      if (!container.getBoundingClientRect().top || container.getBoundingClientRect().top > window.innerHeight) {
+        video.pause();
+      }
+    };
+
+    container.addEventListener('mouseenter', handleMouseEnter);
+    container.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      observer.disconnect();
+      container.removeEventListener('mouseenter', handleMouseEnter);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   return (
     <div ref={sectionsRef} className="bg-white">
@@ -257,9 +305,16 @@ const Home: React.FC = () => {
               Watch Film Reels
             </Link>
           </div>
-          <div className="reveal-el relative">
+          <div ref={videoContainerRef} className="reveal-el relative group">
              <div className="aspect-[4/5] bg-gray-200 overflow-hidden shadow-2xl">
-                <img src="https://picsum.photos/800/1000?random=88" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" loading="lazy" />
+                <video 
+                  ref={videoRef}
+                  src="https://res.cloudinary.com/ddwqme2ef/video/upload/v1772625561/l_fyetek.mp4" 
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" 
+                  loop
+                  muted
+                  playsInline
+                />
              </div>
              <div className="absolute -bottom-10 -left-10 w-48 h-48 border-2 border-luxury/20 hidden md:block" />
           </div>
@@ -294,7 +349,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-24 reveal-el">
             <h3 className="text-luxury tracking-[0.5em] uppercase text-[10px] font-bold mb-4">Our Team</h3>
-            <h2 className="text-5xl md:text-6xl font-serif text-charcoal">Meet The <span className="italic">Artists</span></h2>
+            <h2 className="text-5xl md:text-6xl font-serif text-charcoal">Meet The <span className="italic">Team</span></h2>
             <p className="text-graphite text-lg font-light max-w-2xl mx-auto mt-8 leading-relaxed">
               A collective of passionate storytellers dedicated to capturing your most precious moments with artistic excellence.
             </p>
