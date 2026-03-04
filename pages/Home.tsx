@@ -24,9 +24,12 @@ const Home: React.FC = () => {
     const fetchFeatured = async () => {
       try {
         const items = await galleryAPI.getAll(undefined, true);
-        if (items.length >= 2) {
-          setFeaturedStories(items.slice(0, 2).map((item: any) => {
+        console.log('📸 [FEATURED] Fetched items:', items.length, items);
+        
+        if (items && items.length > 0) {
+          const featured = items.slice(0, 2).map((item: any) => {
             let img = item.imageUrl;
+            // Cloudinary URLs already start with http
             if (img && !img.startsWith('http')) {
               img = img.startsWith('/') ? `https://shivaay-backend.onrender.com${img}` : `https://shivaay-backend.onrender.com/${img}`;
             }
@@ -36,10 +39,14 @@ const Home: React.FC = () => {
               img: img || '',
               tag: item.category
             };
-          }));
+          });
+          console.log('📸 [FEATURED] Setting featured stories:', featured);
+          setFeaturedStories(featured);
+        } else {
+          console.warn('⚠️ [FEATURED] No featured items found');
         }
       } catch (error) {
-        console.error('Error fetching featured:', error);
+        console.error('❌ [FEATURED] Error fetching featured:', error);
       }
     };
     
@@ -120,6 +127,11 @@ const Home: React.FC = () => {
     return () => ctx.revert();
   }, [featuredStories]);
 
+  // Debug: Log featuredStories whenever it changes
+  useEffect(() => {
+    console.log('🔄 [FEATURED] featuredStories updated:', featuredStories.length, featuredStories);
+  }, [featuredStories]);
+
   return (
     <div ref={sectionsRef} className="bg-white">
       <Hero />
@@ -161,11 +173,18 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {featuredStories.map((story, idx) => (
-              <div key={idx} className="reveal-el group cursor-pointer">
-                <div className="aspect-[16/10] overflow-hidden mb-8 shadow-sm">
-                  <img src={story.img} alt={story.title} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
-                </div>
+            {featuredStories.length > 0 ? (
+              featuredStories.map((story, idx) => { 
+                return (
+                  <div key={idx} className="reveal-el group cursor-pointer">
+                    <div className="aspect-[16/10] overflow-hidden mb-8 shadow-sm bg-gray-100">
+                      <img 
+                        src={story.img} 
+                        alt={story.title} 
+                        className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                   
+                      />
+                    </div>
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2 mb-2 text-luxury">
@@ -174,10 +193,17 @@ const Home: React.FC = () => {
                     </div>
                     <h4 className="text-3xl font-serif text-charcoal mb-4 group-hover:text-luxury transition-colors">{story.title}</h4>
                   </div>
-                  <span className="text-[9px] border border-gray-200 px-3 py-1 uppercase tracking-widest text-gray-400 font-bold">{story.tag}</span>
+                    <span className="text-[9px] border border-gray-200 px-3 py-1 uppercase tracking-widest text-gray-400 font-bold">{story.tag}</span>
+                  </div>
                 </div>
+              );
+            })
+            ) : (
+              <div className="col-span-2 text-center py-12 text-gray-400">
+                <p>No featured stories available</p>
+                <p className="text-xs mt-2">Add featured items from admin dashboard</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

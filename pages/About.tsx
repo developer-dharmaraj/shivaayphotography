@@ -13,17 +13,25 @@ const About: React.FC = () => {
           
           <div>
             <span className="text-luxury tracking-[0.5em] uppercase text-[10px] font-bold mb-4 block">Our Story</span>
-            <h1 className="text-5xl md:text-7xl font-serif text-charcoal mb-8">Crafting Memories with <span className="italic">Soul</span></h1>
+            <h1 className="text-5xl md:text-7xl font-serif text-charcoal mb-8">Capturing Love,<span className="italic"> One Frame at a Time Soul</span></h1>
+            <span className ="italic">Some moments pass in seconds. But the right photograph makes them last forever.</span>
             <div className="space-y-6 text-graphite text-lg font-light leading-relaxed">
               <p>
-                Founded in 2012 by master photographer Aryan Malhotra, Lumina Studio was born from a singular vision: to elevate wedding photography into a fine art form. We don't just capture images; we archive emotions.
+              Shivaay Photography came from a deep love for real emotions. The nervous laugh before the vows, the tear that falls when no one is watching, the first look that says everything without a single word—these moments matter to us. We don’t just show up with a camera; we show up with our whole heart. 
               </p>
               <p>
-                Based in Mumbai but traveling the globe, our team specialized in luxury destination weddings and high-profile events. Our style is a blend of cinematic storytelling and editorial elegance, ensuring that your most intimate moments look like a spread in Vogue.
+                 Founded on a simple belief that every love story deserves to be told beautifully, Shivaay Photography has become a trusted name for couples when it matters most. It’s not about having the fanciest equipment; it’s about caring deeply about getting it right.
               </p>
               <p>
-                Every celebration is unique, and we treat it as such. We limit our bookings each year to ensure that every couple receives our undivided artistic attention and the world-class service they deserve.
+                 We are based in India, but love has taken us everywhere. From small backyard ceremonies to grand destination weddings, every celebration we have attended has impacted us as much as we have touched you. 
               </p>
+               <p>
+                Our style? Honest, cinematic, and deeply personal. We don’t create moments; we discover them, feel them, and capture them just as they are—raw, real, and full of life. 
+              </p>
+              <p>
+                Each year, we take a limited number of bookings because you are not a project to us, You are a story we are honored to share.  
+              </p>
+              
             </div>
             
             <div className="mt-12 grid grid-cols-2 gap-10">
