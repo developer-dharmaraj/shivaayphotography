@@ -15,7 +15,49 @@ const Home: React.FC = () => {
   const [pricing, setPricing] = useState<any[]>([]);
 
   useEffect(() => {
-    // Fetch featured gallery items
+    // Fetch categories with featured images
+    const fetchCategories = async () => {
+      try {
+        const categoryList = ['Wedding', 'Pre-Wedding', 'Events', 'Commercial'];
+        const categoryPromises = categoryList.map(async (category) => {
+          try {
+            // Get one featured item for each category
+            const items = await galleryAPI.getAll(category, true);
+            if (items && items.length > 0) {
+              const item = items[0];
+              let img = item.imageUrl;
+              if (img && !img.startsWith('http')) {
+                img = img.startsWith('/') ? `https://shivaay-backend.onrender.com${img}` : `https://shivaay-backend.onrender.com/${img}`;
+              }
+              return {
+                title: category === 'Wedding' ? 'Weddings' : category,
+                img: img || '',
+                path: `/portfolio/${category}`
+              };
+            }
+            // Fallback if no featured item found
+            return {
+              title: category === 'Wedding' ? 'Weddings' : category,
+              img: '',
+              path: `/portfolio/${category}`
+            };
+          } catch (err) {
+            return {
+              title: category === 'Wedding' ? 'Weddings' : category,
+              img: '',
+              path: `/portfolio/${category}`
+            };
+          }
+        });
+        
+        const categoriesData = await Promise.all(categoryPromises);
+        setCategories(categoriesData.filter(cat => cat.img)); // Only show categories with images
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    // Fetch featured stories (different from categories)
     const fetchFeatured = async () => {
       try {
         const items = await galleryAPI.getAll(undefined, true); 
@@ -23,7 +65,6 @@ const Home: React.FC = () => {
         if (items && items.length > 0) {
           const featured = items.slice(0, 2).map((item: any) => {
             let img = item.imageUrl;
-            // Cloudinary URLs already start with http
             if (img && !img.startsWith('http')) {
               img = img.startsWith('/') ? `https://shivaay-backend.onrender.com${img}` : `https://shivaay-backend.onrender.com/${img}`;
             }
@@ -34,13 +75,15 @@ const Home: React.FC = () => {
               tag: item.category
             };
           }); 
-          setCategories(featured)
           setFeaturedStories(featured);
         }  
       } catch (error) {
-        console.error(' [FEATURED] Error fetching featured:', error);
+        console.error('Error fetching featured:', error);
       }
     };
+    
+    fetchCategories();
+    fetchFeatured();
     
     // Fetch teams
     const fetchTeams = async () => {
@@ -82,7 +125,6 @@ const Home: React.FC = () => {
       }
     };
     
-    fetchFeatured();
     fetchTeams();
     fetchPricing();
   }, []);
