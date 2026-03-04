@@ -25,12 +25,18 @@ const Home: React.FC = () => {
       try {
         const items = await galleryAPI.getAll(undefined, true);
         if (items.length >= 2) {
-          setFeaturedStories(items.slice(0, 2).map((item: any) => ({
-            title: item.title,
-            location: item.location || 'Location',
-            img: item.imageUrl?.startsWith('http') ? item.imageUrl : `https://shivaay-backend.onrender.com${item.imageUrl}`,
-            tag: item.category
-          })));
+          setFeaturedStories(items.slice(0, 2).map((item: any) => {
+            let img = item.imageUrl;
+            if (img && !img.startsWith('http')) {
+              img = img.startsWith('/') ? `https://shivaay-backend.onrender.com${img}` : `https://shivaay-backend.onrender.com/${img}`;
+            }
+            return {
+              title: item.title,
+              location: item.location || 'Location',
+              img: img || '',
+              tag: item.category
+            };
+          }));
         }
       } catch (error) {
         console.error('Error fetching featured:', error);
@@ -41,10 +47,16 @@ const Home: React.FC = () => {
     const fetchTeams = async () => {
       try {
         const data = await teamAPI.getAll();
-        const normalizedData = data.map((item: any) => ({
-          ...item,
-          image: item.image?.startsWith('http') ? item.image : item.image ? `https://shivaay-backend.onrender.com${item.image}` : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop'
-        }));
+        const normalizedData = data.map((item: any) => {
+          let image = item.image;
+          if (image && !image.startsWith('http')) {
+            image = image.startsWith('/') ? `https://shivaay-backend.onrender.com${image}` : `https://shivaay-backend.onrender.com/${image}`;
+          }
+          return {
+            ...item,
+            image: image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop'
+          };
+        });
         setTeams(normalizedData);
       } catch (error) {
         console.error('Error fetching teams:', error);
@@ -55,10 +67,16 @@ const Home: React.FC = () => {
     const fetchPricing = async () => {
       try {
         const data = await pricingAPI.getAll();
-        const normalizedData = data.map((item: any) => ({
-          ...item,
-          image: item.image?.startsWith('http') ? item.image : item.image ? `https://shivaay-backend.onrender.com${item.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
-        }));
+        const normalizedData = data.map((item: any) => {
+          let image = item.image;
+          if (image && !image.startsWith('http')) {
+            image = image.startsWith('/') ? `https://shivaay-backend.onrender.com${image}` : `https://shivaay-backend.onrender.com/${image}`;
+          }
+          return {
+            ...item,
+            image: image || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
+          };
+        });
         setPricing(normalizedData);
       } catch (error) {
         console.error('Error fetching pricing:', error);

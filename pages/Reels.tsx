@@ -149,14 +149,26 @@ const ReelItem: React.FC<{ reel: Reel; isActive: boolean }> = ({ reel, isActive 
         setLoading(true);
         const data = await videoAPI.getAll();
         console.log('📹 [REELS] Fetched videos:', data.length, data);
-        const transformed = data.map((video: any) => ({
-          id: video._id || video.id,
-          title: video.title,
-          category: video.category,
-          videoUrl: video.videoUrl?.startsWith('http') ? video.videoUrl : `https://shivaay-backend.onrender.com${video.videoUrl}`,
-          thumbnailUrl: video.thumbnailUrl?.startsWith('http') ? video.thumbnailUrl : `https://shivaay-backend.onrender.com${video.thumbnailUrl}`,
-          location: video.location || 'Location'
-        }));
+        const transformed = data.map((video: any) => {
+          let videoUrl = video.videoUrl;
+          if (videoUrl && !videoUrl.startsWith('http')) {
+            videoUrl = videoUrl.startsWith('/') ? `https://shivaay-backend.onrender.com${videoUrl}` : `https://shivaay-backend.onrender.com/${videoUrl}`;
+          }
+          
+          let thumbnailUrl = video.thumbnailUrl;
+          if (thumbnailUrl && !thumbnailUrl.startsWith('http')) {
+            thumbnailUrl = thumbnailUrl.startsWith('/') ? `https://shivaay-backend.onrender.com${thumbnailUrl}` : `https://shivaay-backend.onrender.com/${thumbnailUrl}`;
+          }
+          
+          return {
+            id: video._id || video.id,
+            title: video.title,
+            category: video.category,
+            videoUrl: videoUrl || '',
+            thumbnailUrl: thumbnailUrl || '',
+            location: video.location || 'Location'
+          };
+        });
         console.log('📹 [REELS] Transformed reels:', transformed.length, transformed);
         setReels(transformed);
       } catch (error) {

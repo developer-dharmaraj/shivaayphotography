@@ -287,7 +287,14 @@ const AdminDashboard: React.FC = () => {
                         <tr key={video._id} className="hover:bg-white/[0.02] transition-colors">
                           <td className="px-6 py-6">
                             <div className="w-16 h-16 bg-gray-900 border border-white/5 overflow-hidden rounded">
-                              {video.thumbnailUrl && <img src={`https://shivaay-backend.onrender.com${video.thumbnailUrl}`} className="w-full h-full object-cover" alt={video.title} />}
+                              {video.thumbnailUrl && (() => {
+                                const thumbnailUrl = video.thumbnailUrl.startsWith('http') 
+                                  ? video.thumbnailUrl 
+                                  : video.thumbnailUrl.startsWith('/')
+                                    ? `https://shivaay-backend.onrender.com${video.thumbnailUrl}`
+                                    : `https://shivaay-backend.onrender.com/${video.thumbnailUrl}`;
+                                return <img src={thumbnailUrl} className="w-full h-full object-cover" alt={video.title} />;
+                              })()}
                             </div>
                           </td>
                           <td className="px-6 py-6">

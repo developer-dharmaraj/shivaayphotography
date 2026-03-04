@@ -27,7 +27,7 @@ const Portfolio: React.FC = () => {
           // Construct full image URL
           let imageUrl = item.imageUrl;
           if (imageUrl && !imageUrl.startsWith('http')) {
-            // Ensure the URL starts with /uploads
+            // Ensure the URL starts with /
             if (!imageUrl.startsWith('/')) {
               imageUrl = '/' + imageUrl;
             }
@@ -45,7 +45,7 @@ const Portfolio: React.FC = () => {
             id: item._id || item.id,
             title: item.title,
             category: item.category,
-            imageUrl: imageUrl,
+            imageUrl: imageUrl || '',
             featured: item.featured,
             aspectRatio: item.aspectRatio || 'portrait'
           };

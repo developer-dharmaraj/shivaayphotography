@@ -15,10 +15,21 @@ const Hero: React.FC = () => {
         const banners = await bannerAPI.getAll();
         if (banners.length > 0) {
           const activeBanner = banners[0];
+          
+          let imageUrl = activeBanner.imageUrl;
+          if (imageUrl && !imageUrl.startsWith('http')) {
+            imageUrl = imageUrl.startsWith('/') ? `https://shivaay-backend.onrender.com${imageUrl}` : `https://shivaay-backend.onrender.com/${imageUrl}`;
+          }
+          
+          let videoUrl = activeBanner.videoUrl;
+          if (videoUrl && !videoUrl.startsWith('http')) {
+            videoUrl = videoUrl.startsWith('/') ? `https://shivaay-backend.onrender.com${videoUrl}` : `https://shivaay-backend.onrender.com/${videoUrl}`;
+          }
+          
           setBanner({
             ...activeBanner,
-            imageUrl: activeBanner.imageUrl?.startsWith('http') ? activeBanner.imageUrl : `https://shivaay-backend.onrender.com${activeBanner.imageUrl}`,
-            videoUrl: activeBanner.videoUrl?.startsWith('http') ? activeBanner.videoUrl : activeBanner.videoUrl ? `https://shivaay-backend.onrender.com${activeBanner.videoUrl}` : null
+            imageUrl: imageUrl || null,
+            videoUrl: videoUrl || null
           });
         }
       } catch (error) {

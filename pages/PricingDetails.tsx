@@ -17,14 +17,30 @@ const PricingDetails: React.FC = () => {
           pricingAPI.getBySlug(slug || ''),
           pricingAPI.getAll()
         ]);
+        let packageImage = currentPackage.image;
+        if (packageImage && !packageImage.startsWith('http')) {
+          packageImage = packageImage.startsWith('/') 
+            ? `https://shivaay-backend.onrender.com${packageImage}` 
+            : `https://shivaay-backend.onrender.com/${packageImage}`;
+        }
+        
         setPackageData({
           ...currentPackage,
-          image: currentPackage.image?.startsWith('http') ? currentPackage.image : currentPackage.image ? `https://shivaay-backend.onrender.com${currentPackage.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
+          image: packageImage || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
         });
-        setAllPackages(allPkgs.map((pkg: any) => ({
-          ...pkg,
-          image: pkg.image?.startsWith('http') ? pkg.image : pkg.image ? `https://shivaay-backend.onrender.com${pkg.image}` : 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
-        })));
+        
+        setAllPackages(allPkgs.map((pkg: any) => {
+          let image = pkg.image;
+          if (image && !image.startsWith('http')) {
+            image = image.startsWith('/') 
+              ? `https://shivaay-backend.onrender.com${image}` 
+              : `https://shivaay-backend.onrender.com/${image}`;
+          }
+          return {
+            ...pkg,
+            image: image || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop'
+          };
+        }));
       } catch (error) {
         console.error('Error fetching pricing:', error);
       } finally {

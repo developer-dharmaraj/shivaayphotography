@@ -14,9 +14,16 @@ const BlogPostPage: React.FC = () => {
       if (!slug) return;
       try {
         const data = await blogAPI.getBySlug(slug);
+        let featuredImage = data.featuredImage;
+        if (featuredImage && !featuredImage.startsWith('http')) {
+          featuredImage = featuredImage.startsWith('/') 
+            ? `https://shivaay-backend.onrender.com${featuredImage}` 
+            : `https://shivaay-backend.onrender.com/${featuredImage}`;
+        }
+        
         setBlog({
           ...data,
-          featuredImage: data.featuredImage?.startsWith('http') ? data.featuredImage : `https://shivaay-backend.onrender.com${data.featuredImage}`
+          featuredImage: featuredImage || ''
         });
       } catch (error) {
         console.error('Error fetching blog:', error);

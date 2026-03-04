@@ -12,18 +12,27 @@ const Blog: React.FC = () => {
     const fetchBlogs = async () => {
       try {
         const data = await blogAPI.getAll();
-        const transformed = data.map((post: any) => ({
-          id: post._id || post.id,
-          title: post.title,
-          slug: post.slug,
-          excerpt: post.excerpt,
-          content: post.content,
-          featuredImage: post.featuredImage?.startsWith('http') ? post.featuredImage : `https://shivaay-backend.onrender.com${post.featuredImage}`,
-          category: post.category,
-          date: new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-          metaTitle: post.metaTitle,
-          metaDescription: post.metaDescription
-        }));
+        const transformed = data.map((post: any) => {
+          let featuredImage = post.featuredImage;
+          if (featuredImage && !featuredImage.startsWith('http')) {
+            featuredImage = featuredImage.startsWith('/') 
+              ? `https://shivaay-backend.onrender.com${featuredImage}` 
+              : `https://shivaay-backend.onrender.com/${featuredImage}`;
+          }
+          
+          return {
+            id: post._id || post.id,
+            title: post.title,
+            slug: post.slug,
+            excerpt: post.excerpt,
+            content: post.content,
+            featuredImage: featuredImage || '',
+            category: post.category,
+            date: new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+            metaTitle: post.metaTitle,
+            metaDescription: post.metaDescription
+          };
+        });
         setBlogs(transformed);
       } catch (error) {
         console.error('Error fetching blogs:', error);
